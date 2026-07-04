@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #a43d00;
+  --color-primary-container: #f27438;
+  --color-primary-fixed: #ffdbcd;
+  --color-primary-fixed-dim: #ffb597;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #591e00;
+  --color-on-primary-fixed: #360f00;
+  --color-on-primary-fixed-variant: #7d2d00;
+  --color-inverse-primary: #ffb597;
+  
+  --color-secondary: #4a654e;
+  --color-secondary-container: #c9e8cb;
+  --color-secondary-fixed: #cceace;
+  --color-secondary-fixed-dim: #b0ceb2;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #4e6952;
+  --color-on-secondary-fixed: #07200f;
+  --color-on-secondary-fixed-variant: #334d38;
+
+  --color-tertiary: #006783;
+  --color-tertiary-container: #00a5d0;
+  --color-tertiary-fixed: #bce9ff;
+  --color-tertiary-fixed-dim: #61d4ff;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #003545;
+  --color-on-tertiary-fixed: #001f29;
+  --color-on-tertiary-fixed-variant: #004d63;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --color-background: #f9f9f8;
+  --color-on-background: #1a1c1c;
+
+  --color-surface: #f9f9f8;
+  --color-surface-dim: #dadad9;
+  --color-surface-bright: #f9f9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f3;
+  --color-surface-container: #eeeeed;
+  --color-surface-container-high: #e8e8e7;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-variant: #e2e2e2;
+  --color-surface-tint: #a43d00;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #584239;
+  --color-inverse-surface: #2f3130;
+  --color-inverse-on-surface: #f1f1f0;
+
+  --color-outline: #8b7267;
+  --color-outline-variant: #dfc0b4;
+
+  --font-display: "Geist", sans-serif;
+  --font-headline: "Geist", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Geist", sans-serif;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-xxl: 64px;
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 48px;
+  --spacing-touch-target: 44px;
+
+  /* Custom Utilities */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 300;
+  
+  --text-display-lg-mobile: 32px;
+  --text-display-lg-mobile--line-height: 40px;
+  --text-display-lg-mobile--letter-spacing: -0.02em;
+  --text-display-lg-mobile--font-weight: 300;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 500;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 600;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .stamp-effect {
+    mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" stroke="black" stroke-width="8" stroke-dasharray="10 5 20 5 15 5" fill="none"/><text x="50" y="65" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="black">FEITO</text></svg>');
+    mask-size: cover;
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" stroke="black" stroke-width="8" stroke-dasharray="10 5 20 5 15 5" fill="none"/><text x="50" y="65" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="black">FEITO</text></svg>');
+    -webkit-mask-size: cover;
+  }
+}
