@@ -16,9 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       
       return res.status(200).json(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao buscar exercícios:', error);
-      return res.status(500).json({ error: 'Erro interno ao buscar exercícios' });
+      return res.status(500).json({ error: 'Erro interno ao buscar exercícios', details: error.message || String(error) });
     }
   }
 
@@ -36,9 +36,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }).returning();
 
       return res.status(201).json(novoExercicio[0]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar exercício:', error);
-      return res.status(500).json({ error: 'Erro interno ao criar exercício' });
+      return res.status(500).json({ error: 'Erro interno ao criar exercício', details: error.message || String(error) });
     }
   }
 

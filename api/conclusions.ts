@@ -16,9 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       
       return res.status(200).json(resultados);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao buscar conclusões:', error);
-      return res.status(500).json({ error: 'Erro interno ao buscar conclusões' });
+      return res.status(500).json({ error: 'Erro interno ao buscar conclusões', details: error.message || String(error) });
     }
   }
 
@@ -56,9 +56,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
         return res.status(201).json({ status: 'marked' });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao alternar conclusão:', error);
-      return res.status(500).json({ error: 'Erro interno' });
+      return res.status(500).json({ error: 'Erro interno', details: error.message || String(error) });
     }
   }
 
