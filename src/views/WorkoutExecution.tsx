@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Minus, CheckCircle } from 'lucide-react';
+import { Plus, Minus, CheckCircle, Check } from 'lucide-react';
 import { api, Exercicio, Conclusao } from '../lib/api';
 
 const DIAS_CURTO = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -137,23 +137,22 @@ export function WorkoutExecution() {
                     <div 
                       key={ex.id}
                       onClick={() => handleToggle(ex.id)}
-                      className={`relative p-4 border rounded-lg transition-colors cursor-pointer ${isCompleted ? 'border-primary bg-primary-container/10' : 'border-outline-variant bg-surface hover:border-primary'}`}
+                      className={`group relative p-5 border rounded-[1.5rem] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer overflow-hidden ${isCompleted ? 'border-primary/30 bg-primary/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' : 'border-outline-variant/50 bg-surface hover:border-primary/30 hover:bg-surface-container-lowest'}`}
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="font-body text-body-md font-bold uppercase pr-8">{ex.nome}</h4>
+                      <div className="flex justify-between items-start mb-6">
+                        <h4 className={`font-body text-body-md font-bold uppercase pr-8 transition-colors duration-500 ${isCompleted ? 'text-primary' : 'text-on-surface'}`}>{ex.nome}</h4>
                         
-                        {!isCompleted ? (
-                          <button className="h-[32px] px-4 border border-outline-variant rounded font-label text-label-sm hover:bg-surface-variant transition-colors uppercase whitespace-nowrap">
-                            Marcar Feito
-                          </button>
-                        ) : null}
-
-                        {/* Stamp Overlay */}
-                        {isCompleted && (
-                          <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary text-on-primary stamp-effect flex items-center justify-center transform rotate-12 opacity-90 pointer-events-none rounded-full">
-                            <span className="font-headline text-xl transform -rotate-12">FEITO</span>
-                          </div>
-                        )}
+                        {/* High-end Checkmark Toggle */}
+                        <div className="relative flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full overflow-hidden transition-transform duration-500 group-active:scale-90">
+                          {/* Background fill that scales up */}
+                          <div className={`absolute inset-0 rounded-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isCompleted ? 'scale-100 bg-primary' : 'scale-0 bg-transparent'}`}></div>
+                          
+                          {/* Unchecked ring */}
+                          <div className={`absolute inset-0 rounded-full border border-outline-variant transition-opacity duration-300 ${isCompleted ? 'opacity-0' : 'opacity-100 group-hover:border-primary/50'}`}></div>
+                          
+                          {/* Check Icon */}
+                          <Check size={16} strokeWidth={3} className={`relative z-10 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isCompleted ? 'text-on-primary scale-100 opacity-100 rotate-0' : 'text-transparent scale-50 opacity-0 -rotate-45'}`} />
+                        </div>
                       </div>
 
                       <div className={`grid grid-cols-4 gap-4 border-t border-surface-variant pt-4 transition-opacity ${isCompleted ? 'opacity-50' : 'opacity-100'}`}>

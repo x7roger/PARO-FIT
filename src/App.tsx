@@ -49,7 +49,7 @@ export default function App() {
         <h1 className="text-display-lg-mobile font-display uppercase tracking-tight text-primary">
           {getTitle()}
         </h1>
-        <button className="text-on-surface-variant hover:opacity-80 active:scale-95 transition-all">
+        <button onClick={() => setActiveTab('configuracao')} className="text-on-surface-variant hover:opacity-80 active:scale-95 transition-all">
           <Settings size={24} />
         </button>
       </header>
@@ -72,14 +72,8 @@ export default function App() {
           >
             EVOLUÇÃO
           </button>
-          <button 
-            onClick={() => setActiveTab('configuracao')}
-            className={`font-label text-label-sm uppercase transition-colors ${activeTab === 'configuracao' ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}
-          >
-            CONFIGURAÇÃO
-          </button>
         </nav>
-        <button className="text-on-surface-variant hover:opacity-80 active:scale-95 transition-all">
+        <button onClick={() => setActiveTab('configuracao')} className={`text-on-surface-variant hover:opacity-80 active:scale-95 transition-all ${activeTab === 'configuracao' ? 'text-primary' : ''}`}>
           <Settings size={24} />
         </button>
       </header>
@@ -90,27 +84,20 @@ export default function App() {
       </main>
 
       {/* Bottom Navigation - Mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-2 bg-background border-t border-surface-variant shadow-sm">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-center gap-16 items-center px-gutter py-2 bg-background/80 backdrop-blur-xl border-t border-surface-variant shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
         <button 
           onClick={() => setActiveTab('treino')}
-          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] transition-all active:scale-90 ${activeTab === 'treino' ? 'text-primary bg-primary-container/20 rounded-full px-5 py-1.5' : 'text-on-surface-variant hover:text-primary'}`}
+          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-90 ${activeTab === 'treino' ? 'text-primary bg-primary-container/10 rounded-[2rem] px-6 py-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' : 'text-on-surface-variant hover:text-primary'}`}
         >
           <Dumbbell size={24} strokeWidth={activeTab === 'treino' ? 2.5 : 2} className="mb-1" />
-          <span className="font-label text-label-sm text-[10px]">TREINO</span>
+          <span className="font-label text-[10px] tracking-widest font-medium uppercase">TREINO</span>
         </button>
         <button 
           onClick={() => setActiveTab('evolucao')}
-          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] transition-all active:scale-90 ${activeTab === 'evolucao' ? 'text-primary bg-primary-container/20 rounded-full px-5 py-1.5' : 'text-on-surface-variant hover:text-primary'}`}
+          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-90 ${activeTab === 'evolucao' ? 'text-primary bg-primary-container/10 rounded-[2rem] px-6 py-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' : 'text-on-surface-variant hover:text-primary'}`}
         >
           <TrendingUp size={24} strokeWidth={activeTab === 'evolucao' ? 2.5 : 2} className="mb-1" />
-          <span className="font-label text-label-sm text-[10px]">EVOLUÇÃO</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('configuracao')}
-          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] transition-all active:scale-90 ${activeTab === 'configuracao' ? 'text-primary bg-primary-container/20 rounded-full px-5 py-1.5' : 'text-on-surface-variant hover:text-primary'}`}
-        >
-          <Settings size={24} strokeWidth={activeTab === 'configuracao' ? 2.5 : 2} className="mb-1" />
-          <span className="font-label text-label-sm text-[10px]">CONFIGURAÇÃO</span>
+          <span className="font-label text-[10px] tracking-widest font-medium uppercase">EVOLUÇÃO</span>
         </button>
       </nav>
     </div>
