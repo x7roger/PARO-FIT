@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../db/index';
+import { getDb } from '../db/index';
 import { conclusoes } from '../db/schema';
 import { and, eq } from 'drizzle-orm';
 
@@ -8,6 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { data } = req.query; // 'YYYY-MM-DD'
       
+      const db = getDb();
       let resultados;
       if (data) {
         resultados = await db.select().from(conclusoes).where(eq(conclusoes.data, data as string));
@@ -31,6 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Verifica se já existe a conclusão para este exercício nesta data
+      const db = getDb();
       const conclusaoExistente = await db.select().from(conclusoes).where(
         and(
           eq(conclusoes.exercicioId, exercicioId),

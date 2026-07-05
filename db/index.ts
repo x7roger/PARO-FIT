@@ -5,9 +5,10 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env' });
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('A variável DATABASE_URL não está definida nas Variáveis de Ambiente.');
-}
-
-const sql = neon(process.env.DATABASE_URL);
-export const db = drizzle(sql, { schema });
+export const getDb = () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('A variável DATABASE_URL não está definida nas Variáveis de Ambiente da Vercel.');
+  }
+  const sql = neon(process.env.DATABASE_URL);
+  return drizzle(sql, { schema });
+};

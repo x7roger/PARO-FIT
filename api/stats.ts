@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../db/index';
+import { getDb } from '../db/index';
 import { conclusoes } from '../db/schema';
 import { sql } from 'drizzle-orm';
 
@@ -10,6 +10,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     // Busca agrupada por data (quantidade de exercícios feitos em cada dia)
+    const db = getDb();
     const statsQuery = await db.select({
       data: conclusoes.data,
       count: sql<number>`count(${conclusoes.id})`

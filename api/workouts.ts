@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db } from '../db/index';
+import { getDb } from '../db/index';
 import { exercicios } from '../db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -8,6 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { diaSemana } = req.query;
       
+      const db = getDb();
       let data;
       if (diaSemana) {
         data = await db.select().from(exercicios).where(eq(exercicios.diaSemana, parseInt(diaSemana as string)));
@@ -25,6 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     try {
       const { diaSemana, bloco, ordemBloco, nome, series, reps, ordem } = req.body;
+      const db = getDb();
       const novoExercicio = await db.insert(exercicios).values({
         diaSemana,
         bloco,
