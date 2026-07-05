@@ -294,3 +294,17 @@ Como solicitado, seguem sugestões de um especialista de produto que agregam val
 ---
 
 *Documento sujeito a revisão conforme validação do usuário e evolução do desenvolvimento (vibe coding via Antigravity, seguindo o padrão de trabalho já estabelecido nos demais projetos).*
+
+---
+
+## 16. Histórico de Entregas e Evoluções (MVP+)
+
+- **CRUD de Configuração Finalizado**: Gestão de exercícios por dia da semana e blocos, permitindo reordenação arrastando, edição e exclusão de itens livremente pelo usuário na aba de Configuração.
+- **Controle Interativo de Cargas (Pesos)**: Implementação antecipada do RF v2. Os usuários podem ajustar os pesos (kg) com cliques simples nos botões `[+]` e `[-]` no momento da execução do treino, com salvamento otimista imediato em nuvem e persistência contínua (como um "diário de carga").
+- **Redesign High-End da Marcação de Exercícios**: O antigo texto duro de "FEITO" deu lugar a um "Toggle Premium" circular com animações fluídas (`cubic-bezier`), preenchimento suave e micro-interações táteis de clique, alinhando com as diretrizes da skill *ui-ux-pro-max*.
+- **Refinamento Tipográfico e Layout**: Otimização do Cabeçalho e da Navegação Inferior (Bottom Nav) com tipografia limpa, peso e rastreio (tracking) cinematográficos, cores mutadas no estado inativo, resolvendo saltos de rolagem móveis com viewport `100dvh`.
+- **Evolução Visual (Glow Up no Dashboard)**: 
+  - Criação de cartões de "Double-Bezel" (dupla moldura de vidro).
+  - Heatmap redesenhado como mapa de bolhas (esferas táteis com efeitos ao passar o mouse).
+  - Gráfico de barras transformado em "Pílulas Flutuantes" minimalistas sustentadas por hairlines invisíveis, garantindo um visual *editorial/luxury fitness app*.
+- **Carga Automática de Dados (Database Seeding)**: Script de utilidade `seed.ts` configurado para alimentar instantaneamente o banco de dados Neon com a grade completa da semana (4 séries e 10 repetições de segunda a sexta) respeitando o modelo declarativo para não anular a capacidade de o usuário editar via app.
