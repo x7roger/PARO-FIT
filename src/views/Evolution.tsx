@@ -73,9 +73,9 @@ export function Evolution() {
         <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)] backdrop-blur-3xl transform hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]">
           <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] p-8 h-full flex flex-col justify-between relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
             <div className="flex items-center">
-              <span className="rounded-full bg-primary/10 text-primary px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-6">SEQUÊNCIA ATUAL</span>
+              <span className="rounded-full bg-primary/10 text-primary px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-4">SEQUÊNCIA ATUAL</span>
             </div>
-            <div className="font-display text-[5rem] leading-none tracking-tighter text-on-surface z-10">
+            <div className="font-display text-display-lg tracking-tight text-on-surface z-10">
               {stats ? stats.streak : '-'}
               <span className="font-body text-body-md tracking-normal text-on-surface-variant uppercase ml-2">Dias</span>
             </div>
@@ -88,9 +88,9 @@ export function Evolution() {
         <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)] backdrop-blur-3xl transform hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]">
           <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] p-8 h-full flex flex-col justify-between relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
             <div className="flex items-center">
-              <span className="rounded-full bg-on-surface/5 text-on-surface-variant px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-6">CONCL. MENSAL</span>
+              <span className="rounded-full bg-on-surface/5 text-on-surface-variant px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-4">CONCL. MENSAL</span>
             </div>
-            <div className="font-display text-[5rem] leading-none tracking-tighter text-primary z-10">
+            <div className="font-display text-display-lg tracking-tight text-primary z-10">
               {stats ? calculateMonthly() : '-'}
               <span className="font-body text-body-md tracking-normal text-on-surface-variant ml-2">%</span>
             </div>

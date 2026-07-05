@@ -20,6 +20,10 @@ export function WorkoutExecution() {
   // Calcula a data exata em 'YYYY-MM-DD' baseada no dia da semana selecionado (na mesma semana)
   const offset = selectedDay - todayIndex;
   const targetDateString = getLocalDateString(offset);
+  
+  // Formatar data para DD/MM/YYYY
+  const [year, month, day] = targetDateString.split('-');
+  const formattedDate = `${day}/${month}/${year}`;
 
   const fetchWorkoutsAndConclusions = async () => {
     try {
@@ -96,6 +100,9 @@ export function WorkoutExecution() {
         <h2 className="font-headline text-headline-md text-on-surface tracking-widest uppercase">
           {['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'][selectedDay]}
         </h2>
+        <span className="font-label text-label-sm text-on-surface-variant tracking-widest mt-1">
+          {formattedDate}
+        </span>
         
         {/* Ruler Day Selector */}
         <div className="w-full mt-6 overflow-x-auto no-scrollbar relative py-4 border-t border-b border-surface-variant">
@@ -125,8 +132,9 @@ export function WorkoutExecution() {
         ) : (
           Object.entries(groupedWorkouts).map(([blocoName, exercises]) => (
             <div key={blocoName} className="bg-surface-container text-on-surface rounded-xl p-6 relative group overflow-hidden">
-              <div className="border-b-2 border-surface-variant pb-2 mb-6">
+              <div className="border-b-2 border-surface-variant pb-2 mb-6 flex justify-between items-end">
                 <h3 className="font-headline text-headline-md uppercase font-bold tracking-tight">{blocoName}</h3>
+                <span className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant opacity-70">{formattedDate}</span>
               </div>
               
               <div className="space-y-6">
