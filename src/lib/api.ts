@@ -9,6 +9,7 @@ export type Exercicio = {
   series: string;
   reps: string;
   ordem: number;
+  peso: number;
   criadoEm?: string;
   atualizadoEm?: string;
 };

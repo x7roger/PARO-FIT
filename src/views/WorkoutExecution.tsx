@@ -47,6 +47,24 @@ export function WorkoutExecution() {
     return () => clearInterval(interval);
   }, [selectedDay, targetDateString]);
 
+  const handleUpdatePeso = async (exercicioId: string, delta: number) => {
+    const ex = workouts.find(w => w.id === exercicioId);
+    if (!ex) return;
+    
+    const currentPeso = Number(ex.peso) || 0;
+    const newPeso = Math.max(0, currentPeso + delta);
+    
+    // Optimistic UI update
+    setWorkouts(prev => prev.map(w => w.id === exercicioId ? { ...w, peso: newPeso } : w));
+    
+    try {
+      await api.updateWorkout(exercicioId, { peso: newPeso });
+    } catch (err) {
+      console.error('Erro ao atualizar peso:', err);
+      fetchWorkoutsAndConclusions(); // Revert on failure
+    }
+  };
+
   const handleToggle = async (exercicioId: string) => {
     // Optimistic UI update
     const isCompleted = conclusions.some(c => c.exercicioId === exercicioId);
@@ -146,9 +164,14 @@ export function WorkoutExecution() {
                         <div className="col-span-1 font-body text-body-lg">{ex.series}</div>
                         <div className="col-span-1 font-body text-body-lg">{ex.reps}</div>
                         <div className="col-span-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button className="w-8 h-8 flex items-center justify-center border border-outline-variant rounded font-body hover:bg-surface-variant transition-colors"><Minus size={16} /></button>
-                          <input type="text" placeholder="-" className="w-16 h-8 text-center bg-transparent border-b border-outline-variant font-body text-body-lg focus:outline-none focus:border-primary" />
-                          <button className="w-8 h-8 flex items-center justify-center border border-outline-variant rounded font-body hover:bg-surface-variant transition-colors"><Plus size={16} /></button>
+                          <button onClick={() => handleUpdatePeso(ex.id, -1)} className="w-8 h-8 flex items-center justify-center border border-outline-variant rounded font-body hover:bg-surface-variant transition-colors active:bg-surface-container-high text-primary"><Minus size={16} /></button>
+                          <input 
+                            type="text" 
+                            value={ex.peso || 0}
+                            readOnly
+                            className="w-16 h-8 text-center bg-transparent border-b border-outline-variant font-headline text-body-lg text-primary focus:outline-none" 
+                          />
+                          <button onClick={() => handleUpdatePeso(ex.id, 1)} className="w-8 h-8 flex items-center justify-center border border-outline-variant rounded font-body hover:bg-surface-variant transition-colors active:bg-surface-container-high text-primary"><Plus size={16} /></button>
                         </div>
                       </div>
                     </div>

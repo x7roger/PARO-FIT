@@ -46,12 +46,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'PUT') {
     try {
-      const { id, nome, series, reps, bloco } = req.body;
+      const { id, nome, series, reps, bloco, peso } = req.body;
       if (!id) return res.status(400).json({ error: 'ID é obrigatório' });
       
       const db = getDb();
+      const updateData: any = { atualizadoEm: new Date() };
+      if (nome !== undefined) updateData.nome = nome;
+      if (series !== undefined) updateData.series = series;
+      if (reps !== undefined) updateData.reps = reps;
+      if (bloco !== undefined) updateData.bloco = bloco;
+      if (peso !== undefined) updateData.peso = peso;
+
       const exercicioAtualizado = await db.update(exercicios)
-        .set({ nome, series, reps, bloco, atualizadoEm: new Date() })
+        .set(updateData)
         .where(eq(exercicios.id, id))
         .returning();
 

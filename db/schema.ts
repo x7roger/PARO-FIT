@@ -10,6 +10,7 @@ export const exercicios = pgTable('exercicios', {
   series: text('series').notNull(),
   reps: text('reps').notNull(),
   ordem: integer('ordem').notNull().default(0),
+  peso: integer('peso').notNull().default(0),
   criadoEm: timestamp('criado_em').defaultNow().notNull(),
   atualizadoEm: timestamp('atualizado_em').defaultNow().notNull(),
 });

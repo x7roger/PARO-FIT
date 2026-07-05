@@ -246,13 +246,15 @@ export function WorkoutEditor() {
                 </div>
 
                 <div>
-                  <label className="block font-label text-label-sm text-on-surface-variant uppercase mb-2">NOME DO EXERCÍCIO</label>
+                  <label className="block font-label text-label-sm text-on-surface-variant uppercase mb-2">
+                    NOME DO EXERCÍCIO <span className="text-red-500 font-bold">*</span>
+                  </label>
                   <input 
                     type="text" 
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     placeholder="Ex: Supino Reto c/ Barra"
-                    className="w-full h-12 px-4 bg-surface-container-lowest border border-outline-variant rounded-lg font-body text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    className={`w-full h-12 px-4 bg-surface-container-lowest border rounded-lg font-body text-body-md focus:outline-none focus:ring-1 transition-colors ${error.includes('Nome') ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-500/5' : 'border-outline-variant focus:border-primary focus:ring-primary'}`}
                   />
                 </div>
 
