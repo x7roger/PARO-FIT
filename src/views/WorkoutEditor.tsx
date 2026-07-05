@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Minus } from 'lucide-react';
+import { Plus, Edit2, Trash2, Minus, ChevronUp, ChevronDown } from 'lucide-react';
 import { api, Exercicio } from '../lib/api';
 
 const DIAS = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
@@ -17,6 +17,7 @@ export function WorkoutEditor() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const fetchWorkouts = async (dia: number) => {
     setLoading(true);
@@ -48,25 +49,83 @@ export function WorkoutEditor() {
     setIsSaving(true);
     
     try {
-      await api.createWorkout({
-        diaSemana: selectedDay,
-        bloco: bloco.trim().toUpperCase(),
-        ordemBloco: 0,
-        nome: nome.trim(),
-        series,
-        reps,
-        ordem: workouts.length,
-      });
-      setNome('');
-      setError('');
-      setIsFormOpen(false);
-      fetchWorkouts(selectedDay); // Refresh
+      if (editingId) {
+        await api.updateWorkout(editingId, {
+          bloco: bloco.trim().toUpperCase(),
+          nome: nome.trim(),
+          series,
+          reps,
+        });
+      } else {
+        await api.createWorkout({
+          diaSemana: selectedDay,
+          bloco: bloco.trim().toUpperCase(),
+          ordemBloco: 0,
+          nome: nome.trim(),
+          series,
+          reps,
+          ordem: workouts.length,
+        });
+      }
+      resetForm();
+      fetchWorkouts(selectedDay);
     } catch (err) {
       console.error(err);
       setError('Erro ao salvar. Verifique o console.');
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleEdit = (ex: Exercicio) => {
+    setBloco(ex.bloco);
+    setNome(ex.nome);
+    setSeries(ex.series);
+    setReps(ex.reps);
+    setEditingId(ex.id);
+    setIsFormOpen(true);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este exercício?')) return;
+    try {
+      await api.deleteWorkout(id);
+      fetchWorkouts(selectedDay);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao excluir exercício.');
+    }
+  };
+
+  const handleMove = async (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === workouts.length - 1) return;
+    
+    const newWorkouts = [...workouts];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    [newWorkouts[index], newWorkouts[targetIndex]] = [newWorkouts[targetIndex], newWorkouts[index]];
+    
+    const reorders = newWorkouts.map((w, i) => ({ id: w.id, ordem: i }));
+    setWorkouts(newWorkouts); // Optimistic
+    
+    try {
+      await api.reorderWorkouts(reorders);
+    } catch (err) {
+      console.error(err);
+      fetchWorkouts(selectedDay); // Revert
+    }
+  };
+
+  const resetForm = () => {
+    setNome('');
+    setBloco('PEITO');
+    setSeries('4');
+    setReps('10-12');
+    setError('');
+    setEditingId(null);
+    setIsFormOpen(false);
   };
 
   // Group by block
@@ -99,7 +158,7 @@ export function WorkoutEditor() {
         <div className="flex justify-between items-center border-b border-surface-variant pb-2 mb-6">
           <h2 className="font-label text-label-sm text-on-surface-variant uppercase">BLOCOS ATIVOS - {DIAS[selectedDay]}</h2>
           <button 
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => { resetForm(); setIsFormOpen(true); }}
             className="font-label text-label-sm text-primary flex items-center gap-1 hover:opacity-80 uppercase"
           >
             <Plus size={14} /> ADICIONAR EXERCÍCIO
@@ -118,32 +177,50 @@ export function WorkoutEditor() {
               {/* Header */}
               <div className="flex justify-between items-center p-4 border-b border-surface-variant bg-surface">
                 <h3 className="font-body text-body-md font-bold uppercase tracking-widest">{blocoName}</h3>
-                <div className="flex gap-4 text-on-surface-variant">
-                  <button className="hover:text-primary"><Edit2 size={18} /></button>
-                  <button className="hover:text-error"><Trash2 size={18} /></button>
-                </div>
               </div>
 
               {/* Exercise List */}
               <div className="bg-surface-container-lowest">
-                {exercises.map((ex) => (
-                  <div key={ex.id} className="flex border-b border-surface-variant hover:bg-surface-container-low transition-colors">
-                    <div className="flex-1 p-4 flex items-center gap-3 border-r border-surface-variant">
-                      <div className="grid grid-cols-2 grid-rows-3 gap-0.5 opacity-30">
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
-                        <div className="w-1 h-1 bg-on-surface rounded-full"></div>
+                {exercises.map((ex) => {
+                  const globalIndex = workouts.findIndex(w => w.id === ex.id);
+                  return (
+                    <div key={ex.id} className="flex border-b border-surface-variant hover:bg-surface-container-low transition-colors items-stretch">
+                      {/* Left: Reorder Buttons */}
+                      <div className="w-12 border-r border-surface-variant flex flex-col items-center justify-center py-2 text-on-surface-variant">
+                        <button 
+                          onClick={() => handleMove(globalIndex, 'up')}
+                          disabled={globalIndex === 0}
+                          className="p-1 hover:text-primary disabled:opacity-30 disabled:hover:text-on-surface-variant transition-colors"
+                        >
+                          <ChevronUp size={18} />
+                        </button>
+                        <button 
+                          onClick={() => handleMove(globalIndex, 'down')}
+                          disabled={globalIndex === workouts.length - 1}
+                          className="p-1 hover:text-primary disabled:opacity-30 disabled:hover:text-on-surface-variant transition-colors"
+                        >
+                          <ChevronDown size={18} />
+                        </button>
                       </div>
-                      <span className="font-body text-body-md">{ex.nome}</span>
+
+                      {/* Middle: Name */}
+                      <div className="flex-1 p-4 flex items-center border-r border-surface-variant">
+                        <span className="font-body text-body-md">{ex.nome}</span>
+                      </div>
+
+                      {/* Right: Info & Actions */}
+                      <div className="flex flex-col border-l border-surface-variant">
+                        <div className="h-1/2 flex items-center justify-end px-4 border-b border-surface-variant gap-4 text-on-surface-variant">
+                          <button onClick={() => handleEdit(ex)} className="hover:text-primary transition-colors p-1"><Edit2 size={16} /></button>
+                          <button onClick={() => handleDelete(ex.id)} className="hover:text-error transition-colors p-1"><Trash2 size={16} /></button>
+                        </div>
+                        <div className="h-1/2 p-2 flex items-center justify-center font-body text-body-md text-on-surface-variant">
+                          {ex.series}x {ex.reps}
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-24 p-4 flex items-center justify-center font-body text-body-md text-on-surface-variant">
-                      {ex.series}x {ex.reps}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))
@@ -154,7 +231,7 @@ export function WorkoutEditor() {
           <div className="border-l-4 border-primary pl-4 py-2 mt-8 animate-in fade-in slide-in-from-top-4">
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
               <h3 className="font-label text-label-sm text-on-surface uppercase border-b border-surface-variant pb-2 mb-6">
-                CONFIGURAR EXERCÍCIO
+                {editingId ? 'EDITAR EXERCÍCIO' : 'CONFIGURAR EXERCÍCIO'}
               </h3>
               
               <div className="space-y-6">
@@ -222,7 +299,7 @@ export function WorkoutEditor() {
 
                 <div className="border-t border-surface-variant pt-6 mt-6 flex gap-4">
                   <button 
-                    onClick={() => setIsFormOpen(false)}
+                    onClick={resetForm}
                     className="flex-1 h-12 border border-outline-variant rounded-lg font-label text-label-sm uppercase hover:bg-surface-variant transition-colors"
                   >
                     CANCELAR
@@ -232,7 +309,7 @@ export function WorkoutEditor() {
                     disabled={isSaving}
                     className="flex-1 h-12 bg-primary text-on-primary rounded-lg font-label text-label-sm uppercase hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
                   >
-                    {isSaving ? 'SALVANDO...' : 'SALVAR EXERCÍCIO'}
+                    {isSaving ? 'SALVANDO...' : editingId ? 'ATUALIZAR EXERCÍCIO' : 'SALVAR EXERCÍCIO'}
                   </button>
                 </div>
               </div>

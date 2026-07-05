@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../db/index.js';
 import { exercicios } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
@@ -11,9 +11,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const db = getDb();
       let data;
       if (diaSemana) {
-        data = await db.select().from(exercicios).where(eq(exercicios.diaSemana, parseInt(diaSemana as string)));
+        data = await db.select().from(exercicios).where(eq(exercicios.diaSemana, parseInt(diaSemana as string))).orderBy(asc(exercicios.ordem), asc(exercicios.ordemBloco), asc(exercicios.criadoEm));
       } else {
-        data = await db.select().from(exercicios);
+        data = await db.select().from(exercicios).orderBy(asc(exercicios.ordem), asc(exercicios.ordemBloco), asc(exercicios.criadoEm));
       }
       
       return res.status(200).json(data);
@@ -41,6 +41,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (error: any) {
       console.error('Erro ao criar exercício:', error);
       return res.status(500).json({ error: 'Erro interno ao criar exercício', details: error.message || String(error) });
+    }
+  }
+
+  if (req.method === 'PUT') {
+    try {
+      const { id, nome, series, reps, bloco } = req.body;
+      if (!id) return res.status(400).json({ error: 'ID é obrigatório' });
+      
+      const db = getDb();
+      const exercicioAtualizado = await db.update(exercicios)
+        .set({ nome, series, reps, bloco, atualizadoEm: new Date() })
+        .where(eq(exercicios.id, id))
+        .returning();
+
+      return res.status(200).json(exercicioAtualizado[0]);
+    } catch (error: any) {
+      console.error('Erro ao atualizar exercício:', error);
+      return res.status(500).json({ error: 'Erro interno ao atualizar', details: error.message || String(error) });
+    }
+  }
+
+  if (req.method === 'PATCH') {
+    try {
+      const { reorders } = req.body; // Array de { id, ordem }
+      if (!Array.isArray(reorders)) return res.status(400).json({ error: 'Formato inválido' });
+
+      const db = getDb();
+      await Promise.all(
+        reorders.map((r) =>
+          db.update(exercicios)
+            .set({ ordem: r.ordem, atualizadoEm: new Date() })
+            .where(eq(exercicios.id, r.id))
+        )
+      );
+
+      return res.status(200).json({ success: true });
+    } catch (error: any) {
+      console.error('Erro ao reordenar exercícios:', error);
+      return res.status(500).json({ error: 'Erro interno ao reordenar', details: error.message || String(error) });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      if (!id) return res.status(400).json({ error: 'ID é obrigatório' });
+
+      const db = getDb();
+      await db.delete(exercicios).where(eq(exercicios.id, id as string));
+
+      return res.status(200).json({ success: true });
+    } catch (error: any) {
+      console.error('Erro ao deletar exercício:', error);
+      return res.status(500).json({ error: 'Erro interno ao deletar', details: error.message || String(error) });
     }
   }
 

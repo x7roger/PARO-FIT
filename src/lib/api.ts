@@ -29,13 +29,41 @@ export const api = {
     return res.json();
   },
 
-  createWorkout: async (workout: Omit<Exercicio, 'id' | 'criadoEm' | 'atualizadoEm'>): Promise<Exercicio> => {
+  createWorkout: async (data: Omit<Exercicio, 'id' | 'criadoEm' | 'atualizadoEm'>) => {
     const res = await fetch(`${BASE_URL}/workouts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(workout),
+      body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error('Erro ao criar exercício');
+    return res.json();
+  },
+
+  updateWorkout: async (id: string, data: Partial<Exercicio>) => {
+    const res = await fetch(`${BASE_URL}/workouts`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...data }),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar exercício');
+    return res.json();
+  },
+
+  deleteWorkout: async (id: string) => {
+    const res = await fetch(`${BASE_URL}/workouts?id=${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Erro ao deletar exercício');
+    return res.json();
+  },
+
+  reorderWorkouts: async (reorders: { id: string, ordem: number }[]) => {
+    const res = await fetch(`${BASE_URL}/workouts`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reorders }),
+    });
+    if (!res.ok) throw new Error('Erro ao reordenar exercícios');
     return res.json();
   },
 
