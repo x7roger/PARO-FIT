@@ -52,7 +52,13 @@ export function Evolution() {
         else if (count > 2) bgColor = 'bg-primary-container opacity-60';
         else if (count > 0) bgColor = 'bg-primary-container opacity-40';
         
-        rowData.push(<div key={`${row}-${col}`} className={`w-3.5 h-3.5 rounded-sm ${bgColor}`} title={`${dStr}: ${count} exercícios`} />);
+        rowData.push(
+          <div 
+            key={`${row}-${col}`} 
+            className={`w-4 h-4 rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-125 hover:shadow-[0_0_12px_rgba(0,0,0,0.1)] ${bgColor}`} 
+            title={`${dStr}: ${count} exercícios`} 
+          />
+        );
       }
       grid.push(<div key={`row-${row}`} className="flex gap-1.5">{rowData}</div>);
     }
@@ -60,78 +66,107 @@ export function Evolution() {
   };
 
   return (
-    <div className="w-full px-margin-mobile md:px-margin-desktop pt-8 pb-24 flex flex-col gap-xl animate-in fade-in">
-      {/* Key Metrics */}
-      <section className="grid grid-cols-2 gap-4">
-        <div className="bg-surface-container-lowest text-on-surface p-5 flex flex-col justify-between border border-outline-variant/30 rounded-xl shadow-sm h-32 relative overflow-hidden group">
-          <div className="font-label text-label-sm text-on-surface-variant">SEQUÊNCIA ATUAL</div>
-          <div className="font-display text-display-lg-mobile tracking-tight z-10">
-            {stats ? stats.streak : '-'} <span className="font-body text-body-md text-on-surface-variant uppercase">Dias</span>
-          </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary-container/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
-        </div>
-        <div className="bg-surface-container-lowest text-on-surface p-5 flex flex-col justify-between border border-outline-variant/30 rounded-xl shadow-sm h-32">
-          <div className="font-label text-label-sm text-on-surface-variant">CONCL. MENSAL</div>
-          <div className="font-display text-display-lg-mobile text-primary tracking-tight">
-            {stats ? calculateMonthly() : '-'} <span className="font-body text-body-lg">%</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Contribution Heatmap */}
-      <section className="flex flex-col gap-4">
-        <div className="flex justify-between items-end border-b border-outline-variant/50 pb-2">
-          <h2 className="font-headline text-[18px] uppercase">Registro de Consistência</h2>
-          <span className="font-label text-label-sm text-on-surface-variant">ÚLTIMOS 90 DIAS</span>
-        </div>
-        <div className="bg-surface-container-lowest rounded-xl shadow-sm p-5 border border-outline-variant/30 overflow-x-auto no-scrollbar">
-          <div className="min-w-[300px]">
-            <div className="flex flex-col gap-1.5">
-              {generateHeatmapGrid()}
+    <div className="w-full px-margin-mobile md:px-margin-desktop pt-12 pb-32 flex flex-col gap-24 animate-in fade-in duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]">
+      {/* High-End Metrics (Double-Bezel Architecture) */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        {/* Card 1 */}
+        <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)] backdrop-blur-3xl transform hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]">
+          <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] p-8 h-full flex flex-col justify-between relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <div className="flex items-center">
+              <span className="rounded-full bg-primary/10 text-primary px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-6">SEQUÊNCIA ATUAL</span>
             </div>
+            <div className="font-display text-[5rem] leading-none tracking-tighter text-on-surface z-10">
+              {stats ? stats.streak : '-'}
+              <span className="font-body text-body-md tracking-normal text-on-surface-variant uppercase ml-2">Dias</span>
+            </div>
+            {/* Subtle Ethereal Orb */}
+            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+          </div>
+        </div>
 
-            <div className="flex justify-end gap-2 mt-4 items-center font-label text-[10px] text-on-surface-variant">
-              <span>MENOS</span>
-              <div className="w-3 h-3 rounded-sm bg-surface-variant"></div>
-              <div className="w-3 h-3 rounded-sm bg-primary-container opacity-40"></div>
-              <div className="w-3 h-3 rounded-sm bg-primary-container opacity-70"></div>
-              <div className="w-3 h-3 rounded-sm bg-primary-container"></div>
-              <span>MAIS</span>
+        {/* Card 2 */}
+        <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)] backdrop-blur-3xl transform hover:-translate-y-1 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]">
+          <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] p-8 h-full flex flex-col justify-between relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <div className="flex items-center">
+              <span className="rounded-full bg-on-surface/5 text-on-surface-variant px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium mb-6">CONCL. MENSAL</span>
+            </div>
+            <div className="font-display text-[5rem] leading-none tracking-tighter text-primary z-10">
+              {stats ? calculateMonthly() : '-'}
+              <span className="font-body text-body-md tracking-normal text-on-surface-variant ml-2">%</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Weekly Frequency Graph */}
-      <section className="flex flex-col gap-4">
-        <h2 className="font-headline text-[18px] uppercase border-b border-outline-variant/50 pb-2">Pulso de Intensidade da Semana</h2>
-        <div className="relative h-48 w-full flex items-end justify-between px-4 pt-6 border-l border-b border-outline-variant/50 bg-surface-container-lowest rounded-tr-xl rounded-br-xl mt-2 overflow-hidden">
-          {/* Grid Lines */}
-          <div className="absolute inset-0 flex flex-col justify-between opacity-10 pointer-events-none pb-8 pt-6">
-            <div className="w-full h-px bg-on-surface"></div>
-            <div className="w-full h-px bg-on-surface"></div>
-            <div className="w-full h-px bg-on-surface"></div>
+      {/* Contribution Heatmap (High-End) */}
+      <section className="w-full">
+        <div className="flex justify-between items-end mb-8 px-2">
+          <div className="flex flex-col gap-2">
+            <span className="rounded-full bg-on-surface/5 text-on-surface-variant w-max px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium">Histórico</span>
+            <h2 className="font-headline text-[24px] uppercase tracking-wide">Registro de Consistência</h2>
           </div>
-          
-          {/* Data Points (Bars) / Labels */}
-          {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map((label, idx) => {
-            const count = stats?.weekData[idx] || 0;
-            // altura máxima = 15 exercícios = 100% da barra (~120px)
-            const height = Math.min((count / 15) * 120, 120);
-            const isToday = new Date().getDay() === idx;
-
-            return (
-              <div key={idx} className="flex flex-col items-center z-10 w-8 relative h-full justify-end">
-                {count > 0 && (
-                   <div 
-                    className={`w-3 rounded-t-sm absolute bottom-8 transition-all duration-700 ease-out ${isToday ? 'bg-primary' : 'bg-primary-container opacity-70'}`} 
-                    style={{ height: `${height}px` }}
-                   ></div>
-                )}
-                <span className={`font-label text-[10px] ${isToday ? 'text-primary font-bold' : 'text-on-surface-variant'} mb-2`}>{label}</span>
+          <span className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant hidden md:block">Últimos 90 dias</span>
+        </div>
+        
+        <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)]">
+          <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] p-8 overflow-x-auto no-scrollbar shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <div className="min-w-[340px] flex flex-col items-center">
+              <div className="flex flex-col gap-2.5">
+                {generateHeatmapGrid()}
               </div>
-            );
-          })}
+
+              <div className="flex w-full justify-end gap-3 mt-8 items-center font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+                <span>Menos</span>
+                <div className="w-4 h-4 rounded-full bg-surface-variant"></div>
+                <div className="w-4 h-4 rounded-full bg-primary-container opacity-40"></div>
+                <div className="w-4 h-4 rounded-full bg-primary-container opacity-70"></div>
+                <div className="w-4 h-4 rounded-full bg-primary-container"></div>
+                <span>Mais</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Weekly Frequency Graph (High-End) */}
+      <section className="w-full">
+        <div className="flex flex-col gap-2 mb-8 px-2">
+          <span className="rounded-full bg-on-surface/5 text-on-surface-variant w-max px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium">Intensidade</span>
+          <h2 className="font-headline text-[24px] uppercase tracking-wide">Pulso da Semana</h2>
+        </div>
+        
+        <div className="p-2 bg-surface-container-lowest/50 ring-1 ring-outline-variant/30 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.02)]">
+          <div className="bg-surface-container-lowest rounded-[calc(2rem-0.5rem)] px-6 pt-12 pb-6 relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] flex items-end justify-between h-64">
+            
+            {/* Elegant Hairlines */}
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-12 pt-12 px-6">
+              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-on-surface/5 to-transparent"></div>
+              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-on-surface/5 to-transparent"></div>
+              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-on-surface/5 to-transparent"></div>
+            </div>
+            
+            {/* Floating Pill Bars */}
+            {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map((label, idx) => {
+              const count = stats?.weekData[idx] || 0;
+              // Max height scaled for container
+              const height = Math.min((count / 15) * 140, 140);
+              const isToday = new Date().getDay() === idx;
+
+              return (
+                <div key={idx} className="flex flex-col items-center z-10 w-10 relative h-full justify-end group">
+                  <div className="relative w-4 flex flex-col justify-end items-center mb-6 h-[140px]">
+                    {count > 0 && (
+                       <div 
+                        className={`w-full rounded-full absolute bottom-0 transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)] ${isToday ? 'bg-primary shadow-[0_0_12px_rgba(0,0,0,0.2)]' : 'bg-on-surface/20 group-hover:bg-on-surface/40'}`} 
+                        style={{ height: `${height}px` }}
+                       ></div>
+                    )}
+                  </div>
+                  <span className={`font-label text-[10px] uppercase tracking-widest transition-colors ${isToday ? 'text-primary font-bold' : 'text-on-surface-variant group-hover:text-on-surface'}`}>{label}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
