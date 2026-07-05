@@ -15,6 +15,8 @@ export function WorkoutEditor() {
   const [reps, setReps] = useState('10-12');
   const [bloco, setBloco] = useState('PEITO');
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchWorkouts = async (dia: number) => {
     setLoading(true);
@@ -33,22 +35,37 @@ export function WorkoutEditor() {
   }, [selectedDay]);
 
   const handleSave = async () => {
-    if (!nome.trim() || !bloco.trim()) return;
+    if (!bloco.trim()) {
+      setError('O campo Bloco é obrigatório.');
+      return;
+    }
+    if (!nome.trim()) {
+      setError('O Nome do Exercício é obrigatório.');
+      return;
+    }
+    
+    setError('');
+    setIsSaving(true);
+    
     try {
       await api.createWorkout({
         diaSemana: selectedDay,
-        bloco: bloco.toUpperCase(),
+        bloco: bloco.trim().toUpperCase(),
         ordemBloco: 0,
-        nome,
+        nome: nome.trim(),
         series,
         reps,
         ordem: workouts.length,
       });
       setNome('');
+      setError('');
       setIsFormOpen(false);
       fetchWorkouts(selectedDay); // Refresh
     } catch (err) {
       console.error(err);
+      setError('Erro ao salvar. Verifique o console.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -197,6 +214,12 @@ export function WorkoutEditor() {
                   />
                 </div>
 
+                {error && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/50 text-red-500 rounded-lg font-label text-label-sm text-center">
+                    {error}
+                  </div>
+                )}
+
                 <div className="border-t border-surface-variant pt-6 mt-6 flex gap-4">
                   <button 
                     onClick={() => setIsFormOpen(false)}
@@ -206,10 +229,10 @@ export function WorkoutEditor() {
                   </button>
                   <button 
                     onClick={handleSave}
-                    disabled={!nome || !bloco}
-                    className="flex-1 h-12 bg-primary text-on-primary rounded-lg font-label text-label-sm uppercase hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
+                    disabled={isSaving}
+                    className="flex-1 h-12 bg-primary text-on-primary rounded-lg font-label text-label-sm uppercase hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
                   >
-                    SALVAR EXERCÍCIO
+                    {isSaving ? 'SALVANDO...' : 'SALVAR EXERCÍCIO'}
                   </button>
                 </div>
               </div>
