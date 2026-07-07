@@ -12,24 +12,26 @@ type Tab = 'treino' | 'evolucao' | 'configuracao';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('treino');
+  const todayIndex = new Date().getDay();
+  const [selectedDay, setSelectedDay] = useState<number>(todayIndex);
 
   const renderView = () => {
     switch (activeTab) {
       case 'treino':
-        return <WorkoutExecution />;
+        return <WorkoutExecution selectedDay={selectedDay} setSelectedDay={setSelectedDay} />;
       case 'evolucao':
         return <Evolution />;
       case 'configuracao':
         return <WorkoutEditor />;
       default:
-        return <WorkoutExecution />;
+        return <WorkoutExecution selectedDay={selectedDay} setSelectedDay={setSelectedDay} />;
     }
   };
 
   const getTitle = () => {
     switch (activeTab) {
       case 'treino':
-        return 'PARO FIT';
+        return ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'][selectedDay];
       case 'evolucao':
         return 'EVOLUÇÃO';
       case 'configuracao':
@@ -43,9 +45,9 @@ export default function App() {
     <div className="flex flex-col min-h-[100dvh] pb-[64px] md:pb-0 bg-background">
       {/* Top App Bar - Mobile */}
       <header className="md:hidden sticky top-0 w-full z-40 bg-background/90 backdrop-blur-md border-b border-surface-variant flex justify-between items-center px-margin-mobile h-[52px]">
-        <button className="text-on-surface-variant hover:text-primary active:scale-95 transition-all p-2 -ml-2">
-          <Calendar size={20} strokeWidth={2.5} />
-        </button>
+        <div className="text-on-surface-variant font-display font-bold text-xs uppercase tracking-widest p-2 -ml-2">
+          PARO FIT
+        </div>
         <h1 className="text-base font-display font-bold uppercase tracking-tight text-primary">
           {getTitle()}
         </h1>
@@ -56,9 +58,15 @@ export default function App() {
 
       {/* Top App Bar - Desktop */}
       <header className="hidden md:flex sticky top-0 w-full z-40 bg-background/90 backdrop-blur-md border-b border-surface-variant justify-between items-center px-margin-desktop h-[60px]">
-        <h1 className="text-lg font-display font-bold uppercase tracking-tight text-primary">
-          {getTitle()}
-        </h1>
+        <div className="flex items-center gap-4">
+          <span className="text-on-surface-variant font-display font-bold text-sm uppercase tracking-widest">
+            PARO FIT
+          </span>
+          <div className="w-1 h-1 bg-surface-variant rounded-full"></div>
+          <h1 className="text-lg font-display font-bold uppercase tracking-tight text-primary">
+            {getTitle()}
+          </h1>
+        </div>
         <nav className="flex gap-8 h-full items-center">
           <button 
             onClick={() => setActiveTab('treino')}
