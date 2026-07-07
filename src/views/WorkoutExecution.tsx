@@ -16,6 +16,7 @@ export function WorkoutExecution() {
   const [workouts, setWorkouts] = useState<Exercicio[]>([]);
   const [conclusions, setConclusions] = useState<Conclusao[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isWorkoutLocked, setIsWorkoutLocked] = useState(false);
 
   // Calcula a data exata em 'YYYY-MM-DD' baseada no dia da semana selecionado (na mesma semana)
   const offset = selectedDay - todayIndex;
@@ -96,7 +97,7 @@ export function WorkoutExecution() {
   return (
     <div className="w-full px-margin-mobile md:px-margin-desktop pt-8 pb-12">
       {/* Current Day Header */}
-      <div className="mb-8 flex flex-col items-center">
+      <div className="mb-8 flex flex-col items-center sticky top-[52px] md:top-[60px] z-30 bg-background pt-4 pb-2 shadow-sm border-b border-surface-variant -mx-margin-mobile px-margin-mobile md:-mx-margin-desktop md:px-margin-desktop">
         <h2 className="font-headline text-headline-md text-on-surface tracking-widest uppercase">
           {['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'][selectedDay]}
         </h2>
@@ -144,14 +145,16 @@ export function WorkoutExecution() {
                   return (
                     <div 
                       key={ex.id}
-                      onClick={() => handleToggle(ex.id)}
-                      className={`group relative p-5 border rounded-[1.5rem] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer overflow-hidden ${isCompleted ? 'border-primary/30 bg-primary/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' : 'border-outline-variant/50 bg-surface hover:border-primary/30 hover:bg-surface-container-lowest'}`}
+                      className={`group relative p-3 md:p-4 border rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden ${isCompleted ? 'border-primary/30 bg-primary/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]' : 'border-outline-variant/50 bg-surface hover:border-primary/30 hover:bg-surface-container-lowest'}`}
                     >
-                      <div className="flex justify-between items-start mb-6">
+                      <div className="flex justify-between items-start mb-4">
                         <h4 className={`font-body text-body-md font-bold uppercase pr-8 transition-colors duration-500 ${isCompleted ? 'text-primary' : 'text-on-surface'}`}>{ex.nome}</h4>
                         
                         {/* High-end Checkmark Toggle */}
-                        <div className="relative flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full overflow-hidden transition-transform duration-500 group-active:scale-90">
+                        <div 
+                          onClick={(e) => { e.stopPropagation(); if (!isWorkoutLocked) handleToggle(ex.id); }}
+                          className={`relative flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-full overflow-hidden transition-transform duration-500 group-active:scale-90 cursor-pointer ${isWorkoutLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
                           {/* Background fill that scales up */}
                           <div className={`absolute inset-0 rounded-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isCompleted ? 'scale-100 bg-primary' : 'scale-0 bg-transparent'}`}></div>
                           
@@ -163,7 +166,7 @@ export function WorkoutExecution() {
                         </div>
                       </div>
 
-                      <div className={`grid grid-cols-4 gap-4 border-t border-surface-variant pt-4 transition-opacity ${isCompleted ? 'opacity-50' : 'opacity-100'}`}>
+                      <div className={`grid grid-cols-4 gap-2 md:gap-4 border-t border-surface-variant pt-3 transition-opacity ${isCompleted ? 'opacity-50' : 'opacity-100'}`}>
                         <div className="col-span-1 font-label text-label-sm text-on-surface-variant">SÉRIES</div>
                         <div className="col-span-1 font-label text-label-sm text-on-surface-variant">REPS</div>
                         <div className="col-span-2 font-label text-label-sm text-on-surface-variant">PESO (KG)</div>
@@ -192,9 +195,12 @@ export function WorkoutExecution() {
         {/* Finish Workout Button */}
         {workouts.length > 0 && (
           <div className="pt-8 pb-12 flex justify-center">
-            <button className="h-[56px] px-8 bg-primary text-on-primary font-label text-label-sm rounded-lg hover:bg-opacity-90 transition-opacity active:scale-95 flex items-center gap-2">
+            <button 
+              onClick={() => setIsWorkoutLocked(!isWorkoutLocked)}
+              className={`h-[56px] px-8 font-label text-label-sm rounded-lg hover:bg-opacity-90 transition-opacity active:scale-95 flex items-center gap-2 ${isWorkoutLocked ? 'bg-surface-variant text-on-surface' : 'bg-primary text-on-primary'}`}
+            >
               <CheckCircle size={20} />
-              CONCLUIR TREINO
+              {isWorkoutLocked ? 'DESBLOQUEAR TREINO' : 'CONCLUIR TREINO'}
             </button>
           </div>
         )}
