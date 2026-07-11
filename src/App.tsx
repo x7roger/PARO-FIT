@@ -5,7 +5,6 @@
 import { useState } from 'react';
 import { Calendar, Settings, Dumbbell, TrendingUp, LayoutGrid } from 'lucide-react';
 import { WorkoutExecutionV2 } from './views/WorkoutExecutionV2';
-import { WorkoutEditor } from './views/WorkoutEditor';
 import { SettingsV2 } from './views/SettingsV2';
 import { Evolution } from './views/Evolution';
 

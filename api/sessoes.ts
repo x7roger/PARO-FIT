@@ -58,13 +58,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           sessaoTreinoGrupoId: execucaoExercicio.sessaoTreinoGrupoId,
           exercicioId: execucaoExercicio.exercicioId,
           feito: execucaoExercicio.feito,
-          nome: exercicio.nome,
-          series: exercicio.series,
-          repeticoes: exercicio.repeticoes,
+          nome: execucaoExercicio.nome,
+          series: execucaoExercicio.series,
+          repeticoes: execucaoExercicio.repeticoes,
           criadoEm: execucaoExercicio.criadoEm
         })
         .from(execucaoExercicio)
-        .innerJoin(exercicio, eq(execucaoExercicio.exercicioId, exercicio.id))
         .innerJoin(sessaoTreinoGrupo, eq(execucaoExercicio.sessaoTreinoGrupoId, sessaoTreinoGrupo.id))
         .where(eq(sessaoTreinoGrupo.sessaoTreinoId, sessao.id));
 
@@ -115,11 +114,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .from(exercicio)
           .where(and(eq(exercicio.grupoMuscularId, grupoMuscularId), eq(exercicio.ativo, true)));
 
-        // 3. Create execucaoExercicio for each
+        // 3. Create execucaoExercicio for each with snapshots
         if (exerciciosAtivos.length > 0) {
           const execucoesData = exerciciosAtivos.map(ex => ({
             sessaoTreinoGrupoId: novoGrupo.id,
             exercicioId: ex.id,
+            nome: ex.nome,
+            series: ex.series,
+            repeticoes: ex.repeticoes,
             feito: false
           }));
           await db.insert(execucaoExercicio).values(execucoesData);
