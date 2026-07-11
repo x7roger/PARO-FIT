@@ -22,6 +22,23 @@ export type Conclusao = {
   marcadoPor: string | null;
 };
 
+export type GrupoMuscular = {
+  id: string;
+  nome: string;
+  ordem: number;
+  criadoEm?: string;
+};
+
+export type ExercicioV2 = {
+  id: string;
+  grupoMuscularId: string;
+  nome: string;
+  series: number;
+  repeticoes: string;
+  ativo: boolean;
+  criadoEm?: string;
+};
+
 export const api = {
   getWorkouts: async (diaSemana?: number): Promise<Exercicio[]> => {
     const url = diaSemana !== undefined ? `${BASE_URL}/workouts?diaSemana=${diaSemana}` : `${BASE_URL}/workouts`;
@@ -88,6 +105,57 @@ export const api = {
   getStats: async () => {
     const res = await fetch(`${BASE_URL}/stats`);
     if (!res.ok) throw new Error('Erro ao buscar estatísticas');
+    return res.json();
+  },
+
+  // Novos endpoints (V2 - Grupos Musculares)
+  getGrupos: async (): Promise<GrupoMuscular[]> => {
+    const res = await fetch(`${BASE_URL}/grupos`);
+    if (!res.ok) throw new Error('Erro ao buscar grupos');
+    return res.json();
+  },
+
+  getExercicios: async (grupoMuscularId: string): Promise<ExercicioV2[]> => {
+    const res = await fetch(`${BASE_URL}/exercicio?grupoMuscularId=${grupoMuscularId}`);
+    if (!res.ok) throw new Error('Erro ao buscar exercícios do grupo');
+    return res.json();
+  },
+
+  createExercicio: async (data: Omit<ExercicioV2, 'id' | 'criadoEm'>) => {
+    const res = await fetch(`${BASE_URL}/exercicio`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Erro ao criar exercício');
+    return res.json();
+  },
+
+  updateExercicio: async (id: string, data: Partial<ExercicioV2>) => {
+    const res = await fetch(`${BASE_URL}/exercicio`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...data }),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar exercício');
+    return res.json();
+  },
+
+  toggleExercicioAtivo: async (id: string, ativo: boolean) => {
+    const res = await fetch(`${BASE_URL}/exercicio`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ativo }),
+    });
+    if (!res.ok) throw new Error('Erro ao alternar status do exercício');
+    return res.json();
+  },
+
+  deleteExercicio: async (id: string) => {
+    const res = await fetch(`${BASE_URL}/exercicio?id=${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Erro ao deletar exercício');
     return res.json();
   }
 };

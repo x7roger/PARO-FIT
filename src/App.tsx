@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Calendar, Settings, Dumbbell, TrendingUp, LayoutGrid } from 'lucide-react';
 import { WorkoutExecution } from './views/WorkoutExecution';
 import { WorkoutEditor } from './views/WorkoutEditor';
+import { SettingsV2 } from './views/SettingsV2';
 import { Evolution } from './views/Evolution';
 
 type Tab = 'treino' | 'evolucao' | 'configuracao';
@@ -22,7 +23,7 @@ export default function App() {
       case 'evolucao':
         return <Evolution />;
       case 'configuracao':
-        return <WorkoutEditor />;
+        return <SettingsV2 />;
       default:
         return <WorkoutExecution selectedDay={selectedDay} setSelectedDay={setSelectedDay} />;
     }
