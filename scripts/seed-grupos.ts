@@ -12,15 +12,20 @@ const gruposData = [
   { nome: "Peitorais (Peito)", ordem: 1 },
   { nome: "Dorsais (Costas)", ordem: 2 },
   { nome: "Deltoides (Ombros)", ordem: 3 },
-  { nome: "Bíceps e Tríceps (Braços)", ordem: 4 },
-  { nome: "Quadríceps, Isquiotibiais e Glúteos (Pernas)", ordem: 5 },
-  { nome: "Gastrocnêmio (Panturrilhas)", ordem: 6 },
-  { nome: "Abdominais (Core)", ordem: 7 },
+  { nome: "Bíceps", ordem: 4 },
+  { nome: "Tríceps (Braços)", ordem: 5 },
+  { nome: "Quadríceps e Glúteos", ordem: 6 },
+  { nome: "Posterior de perna e Glúteos", ordem: 7 },
+  { nome: "Abdomem", ordem: 8 },
 ];
 
 async function main() {
   console.log("Iniciando seed de grupos musculares...");
   try {
+    // Limpar tabela antes de inserir
+    await db.delete(grupoMuscular);
+    console.log("Tabela grupo_muscular limpa.");
+
     for (const data of gruposData) {
       const [inserted] = await db.insert(grupoMuscular).values(data).returning();
       console.log(`✅ Grupo inserido: ${inserted.nome} (ID: ${inserted.id})`);
