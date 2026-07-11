@@ -39,6 +39,35 @@ export type ExercicioV2 = {
   criadoEm?: string;
 };
 
+export type ExecucaoExercicio = {
+  id: string;
+  sessaoTreinoGrupoId: string;
+  exercicioId: string;
+  feito: boolean;
+  nome: string;
+  series: number;
+  repeticoes: string;
+};
+
+export type SessaoTreinoGrupo = {
+  id: string;
+  sessaoTreinoId: string;
+  grupoMuscularId: string;
+  ordem: number;
+  nome: string; // group name
+  exercicios: ExecucaoExercicio[];
+};
+
+export type SessaoTreino = {
+  id: string;
+  usuarioId: string;
+  data: string;
+  concluida: boolean;
+  travada: boolean;
+  criadoEm?: string;
+  grupos?: SessaoTreinoGrupo[];
+};
+
 export const api = {
   getWorkouts: async (diaSemana?: number): Promise<Exercicio[]> => {
     const url = diaSemana !== undefined ? `${BASE_URL}/workouts?diaSemana=${diaSemana}` : `${BASE_URL}/workouts`;
@@ -156,6 +185,53 @@ export const api = {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error('Erro ao deletar exercício');
+    return res.json();
+  },
+
+  // Sessões de Treino (V2)
+  getSessao: async (data: string, usuarioId: string = 'user1'): Promise<SessaoTreino | null> => {
+    const res = await fetch(`${BASE_URL}/sessoes?data=${data}&usuarioId=${usuarioId}`);
+    if (!res.ok) throw new Error('Erro ao buscar sessão');
+    return res.json();
+  },
+
+  createSessao: async (data: string, usuarioId: string = 'user1'): Promise<SessaoTreino> => {
+    const res = await fetch(`${BASE_URL}/sessoes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create_session', data, usuarioId }),
+    });
+    if (!res.ok) throw new Error('Erro ao criar sessão');
+    return res.json();
+  },
+
+  addGroupToSessao: async (sessaoTreinoId: string, grupoMuscularId: string, ordem: number): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/sessoes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'add_group', sessaoTreinoId, grupoMuscularId, ordem }),
+    });
+    if (!res.ok) throw new Error('Erro ao adicionar grupo à sessão');
+    return res.json();
+  },
+
+  completeSessao: async (id: string): Promise<SessaoTreino> => {
+    const res = await fetch(`${BASE_URL}/sessoes`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'complete_session', id }),
+    });
+    if (!res.ok) throw new Error('Erro ao concluir sessão');
+    return res.json();
+  },
+
+  toggleExecucao: async (id: string, feito: boolean): Promise<ExecucaoExercicio> => {
+    const res = await fetch(`${BASE_URL}/execucao`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, feito }),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar execução');
     return res.json();
   }
 };

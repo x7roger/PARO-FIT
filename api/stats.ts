@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../db/index.js';
-import { conclusoes } from '../db/schema.js';
-import { sql } from 'drizzle-orm';
+import { sessaoTreino, sessaoTreinoGrupo, execucaoExercicio } from '../db/schema.js';
+import { sql, eq, and } from 'drizzle-orm';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -11,13 +11,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Busca agrupada por data (quantidade de exercícios feitos em cada dia)
     const db = getDb();
+    
+    // In Drizzle, we can join and group by
     const statsQuery = await db.select({
-      data: conclusoes.data,
-      count: sql<number>`count(${conclusoes.id})`
+      data: sessaoTreino.data,
+      count: sql<number>`count(${execucaoExercicio.id})`
     })
-    .from(conclusoes)
-    .groupBy(conclusoes.data)
-    .orderBy(conclusoes.data);
+    .from(sessaoTreino)
+    .innerJoin(sessaoTreinoGrupo, eq(sessaoTreino.id, sessaoTreinoGrupo.sessaoTreinoId))
+    .innerJoin(execucaoExercicio, eq(sessaoTreinoGrupo.id, execucaoExercicio.sessaoTreinoGrupoId))
+    .where(eq(execucaoExercicio.feito, true))
+    .groupBy(sessaoTreino.data)
+    .orderBy(sessaoTreino.data);
 
     // Formatar os dados para o Heatmap (últimos 90 dias)
     const heatmapData: Record<string, number> = {};
