@@ -48,13 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           repeticoes: exercicio.repeticoes
         })
         .from(execucaoExercicio)
-        .innerJoin(exercicio, eq(execucaoExercicio.exercicioId, exercicio.id))
-        .where(
-          // this could be cleaner with `inArray` if we map ids, but assuming we can join via sessao_treino_grupo
-          // Wait, Drizzle doesn't support complex joins seamlessly for sub-fetching without relation APIs. Let's fetch all and filter in JS.
-          // since it's a specific session, we can filter by the returned sessaoGrupos IDs
-          // but we can just join through sessaoTreinoGrupo
-        ); // Wait, I'll rewrite this execucoes query without where, filtering in JS is fine for now, or just use a simple subquery or join.
+        .innerJoin(exercicio, eq(execucaoExercicio.exercicioId, exercicio.id));
 
       // Better query for execucoes:
       // Inner join with sessaoTreinoGrupo, and filter by sessao.id
