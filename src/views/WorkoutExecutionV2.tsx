@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, CheckCircle, Check, X } from 'lucide-react';
+import { Plus, CheckCircle, Check, X, Trash2, Unlock } from 'lucide-react';
 import { api, SessaoTreino, GrupoMuscular } from '../lib/api';
 
 const DIAS_CURTO = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -104,13 +104,6 @@ export function WorkoutExecutionV2({ selectedDay, setSelectedDay }: Props) {
   const handleCompleteSession = async () => {
     if (!sessao) return;
     
-    if (isWorkoutLocked) {
-      // Logic to unlock (not strictly requested, but good UX if accidental lock)
-      // We will keep it one-way as requested by 'travada'
-      alert('Treino já foi travado e não pode ser editado.');
-      return;
-    }
-
     try {
       await api.completeSessao(sessao.id);
       setIsWorkoutLocked(true);
@@ -118,6 +111,32 @@ export function WorkoutExecutionV2({ selectedDay, setSelectedDay }: Props) {
     } catch (err) {
       console.error(err);
       alert('Erro ao concluir treino.');
+    }
+  };
+
+  const handleUnlockSession = async () => {
+    if (!sessao) return;
+    
+    try {
+      await api.unlockSessao(sessao.id);
+      setIsWorkoutLocked(false);
+      fetchSession();
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao destravar treino.');
+    }
+  };
+
+  const handleDeleteGroup = async (sessaoTreinoGrupoId: string) => {
+    if (isWorkoutLocked) return;
+    if (!confirm('Tem certeza que deseja remover este treino?')) return;
+    
+    try {
+      await api.deleteGroupFromSessao(sessaoTreinoGrupoId);
+      fetchSession();
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao remover treino.');
     }
   };
 
@@ -162,7 +181,18 @@ export function WorkoutExecutionV2({ selectedDay, setSelectedDay }: Props) {
               <div key={grupo.id} className="bg-surface-container text-on-surface rounded-xl p-6 relative group overflow-hidden">
                 <div className="border-b-2 border-surface-variant pb-2 mb-6 flex justify-between items-end">
                   <h3 className="font-headline text-headline-md uppercase font-bold tracking-tight">{grupo.nome}</h3>
-                  <span className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant opacity-70">{formattedDate}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant opacity-70">{formattedDate}</span>
+                    {!isWorkoutLocked && (
+                      <button 
+                        onClick={() => handleDeleteGroup(grupo.id)}
+                        className="text-on-surface-variant hover:text-red-500 transition-colors"
+                        title="Remover treino"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-6">
@@ -245,15 +275,22 @@ export function WorkoutExecutionV2({ selectedDay, setSelectedDay }: Props) {
 
             {/* Finish Workout Button */}
             {sessao?.grupos && sessao.grupos.length > 0 && (
-              <div className="pt-8 pb-12 flex justify-center">
-                <button 
-                  onClick={handleCompleteSession}
-                  disabled={isWorkoutLocked}
-                  className={`h-[56px] px-8 font-label text-label-sm rounded-lg transition-all flex items-center gap-2 ${isWorkoutLocked ? 'bg-surface-variant text-on-surface opacity-50 cursor-not-allowed' : 'bg-primary text-on-primary hover:bg-opacity-90 active:scale-95'}`}
-                >
-                  <CheckCircle size={20} />
-                  {isWorkoutLocked ? 'TREINO CONCLUÍDO' : 'CONCLUIR TREINO'}
-                </button>
+              <div className="pt-8 pb-12 flex justify-center gap-4">
+                {isWorkoutLocked ? (
+                  <button 
+                    onClick={handleUnlockSession}
+                    className="h-[56px] px-8 font-label text-label-sm rounded-lg transition-all flex items-center gap-2 bg-surface-variant text-on-surface hover:bg-opacity-80 active:scale-95"
+                  >
+                    <Unlock size={20} /> DESTRAVAR TREINO
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleCompleteSession}
+                    className="h-[56px] px-8 font-label text-label-sm rounded-lg transition-all flex items-center gap-2 bg-primary text-on-primary hover:bg-opacity-90 active:scale-95"
+                  >
+                    <CheckCircle size={20} /> CONCLUIR TREINO
+                  </button>
+                )}
               </div>
             )}
           </>

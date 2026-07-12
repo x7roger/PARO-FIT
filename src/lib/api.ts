@@ -131,6 +131,16 @@ export const api = {
     return res.json();
   },
 
+  deleteGroupFromSessao: async (sessaoTreinoGrupoId: string): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/sessoes`, {
+      method: 'POST', // Using POST with action for simplicity as per existing pattern
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete_group', sessaoTreinoGrupoId }),
+    });
+    if (!res.ok) throw new Error('Erro ao deletar grupo da sessão');
+    return res.json();
+  },
+
   completeSessao: async (id: string): Promise<SessaoTreino> => {
     const res = await fetch(`${BASE_URL}/sessoes`, {
       method: 'PATCH',
@@ -138,6 +148,16 @@ export const api = {
       body: JSON.stringify({ action: 'complete_session', id }),
     });
     if (!res.ok) throw new Error('Erro ao concluir sessão');
+    return res.json();
+  },
+
+  unlockSessao: async (id: string): Promise<SessaoTreino> => {
+    const res = await fetch(`${BASE_URL}/sessoes`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'unlock_session', id }),
+    });
+    if (!res.ok) throw new Error('Erro ao destravar sessão');
     return res.json();
   },
 

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../db/index.js';
 import { sessaoTreino, sessaoTreinoGrupo, execucaoExercicio, exercicio, grupoMuscular } from '../db/schema.js';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const db = getDb();
@@ -130,6 +130,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(201).json(novoGrupo);
       }
 
+      if (action === 'delete_group') {
+        const { sessaoTreinoGrupoId } = req.body;
+        // Delete the group. execucaoExercicio will be deleted automatically due to CASCADE
+        const [deleted] = await db.delete(sessaoTreinoGrupo)
+          .where(eq(sessaoTreinoGrupo.id, sessaoTreinoGrupoId))
+          .returning();
+        return res.status(200).json(deleted);
+      }
+
       return res.status(400).json({ error: 'Ação inválida' });
     } catch (error: any) {
       console.error('Erro no POST /sessoes:', error);
@@ -143,11 +152,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
       if (action === 'complete_session') {
         const { id } = req.body;
+        
+        // 1. Lock the session
         const [sessaoAtualizada] = await db.update(sessaoTreino)
           .set({ concluida: true, travada: true })
           .where(eq(sessaoTreino.id, id))
           .returning();
+          
+        // 2. Fetch all groups for this session
+        const gruposDaSessao = await db.select({ id: sessaoTreinoGrupo.id })
+          .from(sessaoTreinoGrupo)
+          .where(eq(sessaoTreinoGrupo.sessaoTreinoId, id));
+          
+        if (gruposDaSessao.length > 0) {
+          const grupoIds = gruposDaSessao.map(g => g.id);
+          // 3. Mark all exercises as done (feito: true)
+          await db.update(execucaoExercicio)
+            .set({ feito: true })
+            .where(inArray(execucaoExercicio.sessaoTreinoGrupoId, grupoIds));
+        }
+
         return res.status(200).json(sessaoAtualizada);
+      }
+
+      if (action === 'unlock_session') {
+        const { id } = req.body;
+        const [sessaoDestravada] = await db.update(sessaoTreino)
+          .set({ concluida: false, travada: false })
+          .where(eq(sessaoTreino.id, id))
+          .returning();
+        return res.status(200).json(sessaoDestravada);
       }
 
       return res.status(400).json({ error: 'Ação inválida' });
